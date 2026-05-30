@@ -18,7 +18,38 @@ Firefox Nightly and geckodriver are downloaded on first run into `.cache/`.
 
 ## One-time setup for `--vpn`
 
-The VPN runs need a Firefox profile that's already signed in and has the feature flipped on. Do this once:
+The VPN runs need a Firefox profile that's already signed in to a Firefox
+Account and has the feature flipped on.
+
+### Automated (recommended)
+
+```
+uv run setup_profile.py
+```
+
+This registers a fresh throwaway `@restmail.net` account, drives the Firefox
+Account sign-up flow (email → password → confirmation code, with the code read
+out of the restmail inbox over HTTP), signs the browser in, and sets
+`browser.ipProtection.enabled = true` — all into `./profile/`. The generated
+email/password are written to `profile-account.json` (gitignored). To reuse an
+existing restmail address instead:
+
+```
+uv run setup_profile.py --email me@restmail.net --password 'some-long-password'
+```
+
+Firefox runs headed by default; add `--headless` for unattended/CI runs with
+no display (the whole sign-up flow works headless):
+
+```
+uv run setup_profile.py --headless
+```
+
+The approach mirrors [mozilla/blurts-server's functional tests](https://github.com/mozilla/blurts-server/tree/main/functional-tests).
+
+### Manual
+
+Alternatively, do it by hand once:
 
 ```
 env LD_LIBRARY_PATH='' ./.cache/firefox/firefox -profile ./profile
