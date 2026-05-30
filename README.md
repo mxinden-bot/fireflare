@@ -38,6 +38,13 @@ existing restmail address instead:
 uv run setup_profile.py --email me@restmail.net --password 'some-long-password'
 ```
 
+Firefox runs headed by default; add `--headless` for unattended/CI runs with
+no display (the whole sign-up flow works headless):
+
+```
+uv run setup_profile.py --headless
+```
+
 The approach mirrors [mozilla/blurts-server's functional tests](https://github.com/mozilla/blurts-server/tree/main/functional-tests).
 
 ### Manual

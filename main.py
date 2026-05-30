@@ -180,10 +180,15 @@ def scrub_profile_test_stubs() -> None:
         print(f"Scrubbed {len(original) - len(kept)} stub pref(s) from prefs.js")
 
 
-def build_driver(firefox: Path, geckodriver: Path) -> webdriver.Firefox:
+def build_driver(
+    firefox: Path, geckodriver: Path, headless: bool = False
+) -> webdriver.Firefox:
     options = Options()
     options.binary_location = str(firefox)
-    # Headed so progress is visible during local development. Flip for CI.
+    # Headed by default so progress is visible during local development; pass
+    # headless=True for unattended/CI runs that have no display.
+    if headless:
+        options.add_argument("-headless")
     # Persist the Firefox profile under ./profile/ so state (prefs, caches,
     # any MASQUE config) carries across runs instead of being wiped with the
     # default throwaway profile.

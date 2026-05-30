@@ -247,6 +247,11 @@ def main() -> None:
         "--custom-firefox", action="store_true",
         help="use the hardcoded custom build instead of the latest Nightly",
     )
+    parser.add_argument(
+        "--headless", action="store_true",
+        help="run Firefox without a visible window (for unattended/CI runs "
+        "with no display); the whole sign-up flow works headless",
+    )
     args = parser.parse_args()
 
     if args.email and not args.email.endswith("@" + RESTMAIL_DOMAIN):
@@ -268,7 +273,7 @@ def main() -> None:
     password = args.password or generate_password()
 
     scrub_profile_test_stubs()
-    driver = build_driver(firefox, geckodriver)
+    driver = build_driver(firefox, geckodriver, headless=args.headless)
     try:
         enable_ip_protection_pref(driver)
         url = fxa_connect_url(driver)
