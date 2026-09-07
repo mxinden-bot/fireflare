@@ -35,16 +35,17 @@ FIREFOX_NIGHTLY_URL = (
     "https://download.mozilla.org/?product=firefox-nightly-latest-ssl"
     "&os=linux64&lang=en-US"
 )
-# Build of the try push for IP-protection HTTP/3 experiments. Used by
+# Build of the try push for MASQUE HTTP/3 experiments. Used by
 # `--custom-firefox`. It carries HTTP/3 to the origin (connect-udp inner) via
-# the Alt-Svc-validation-skip patch (Bug 2005211), includes D304159 (Bug
-# 2043768, "Honor http2/http3 prefs in Happy Eyeballs v3"), and gates the
-# synthesized MASQUE-primary entry on network.http.http3.enable in
-# IPProtectionServerlist so disabling that pref leaves the plain CONNECT entry,
-# forcing an HTTP/2 CONNECT proxy hop (matrix config 3).
+# the Alt-Svc-validation-skip patch (Bug 2005211), gates the synthesized
+# MASQUE-primary entry on network.http.http3.enable so disabling that pref
+# leaves the plain CONNECT entry and forces an HTTP/2 CONNECT proxy hop (matrix
+# config 3), proxies loopback-hosted page subresources, and back-pressures the
+# inner connect-udp connection instead of queuing outbound datagrams (Bug
+# 1978893), aimed at MASQUE upload throughput (matrix config 5).
 FIREFOX_CUSTOM_URL = (
     "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/"
-    "W0DwkqlJTqGYtbKYGqr9iA/runs/0/artifacts/public/build/target.tar.xz"
+    "QD3F4wI6QQCCgFGOe5JB6w/runs/0/artifacts/public/build/target.tar.xz"
 )
 # Origin whose h3 Alt-Svc we prime before a --vpn --h3 run (see prime_h3_altsvc).
 H3_PRIME_URL = "https://bastion.h3.speed.cloudflare.com/cdn-cgi/trace"
