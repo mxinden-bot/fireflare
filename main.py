@@ -36,15 +36,36 @@ FIREFOX_NIGHTLY_URL = (
     "&os=linux64&lang=en-US"
 )
 # Build of the try push for IP-protection HTTP/3 experiments. Used by
-# `--custom-firefox`. It carries HTTP/3 to the origin (connect-udp inner) via
-# the Alt-Svc-validation-skip patch (Bug 2005211), includes D304159 (Bug
-# 2043768, "Honor http2/http3 prefs in Happy Eyeballs v3"), and gates the
-# synthesized MASQUE-primary entry on network.http.http3.enable in
-# IPProtectionServerlist so disabling that pref leaves the plain CONNECT entry,
-# forcing an HTTP/2 CONNECT proxy hop (matrix config 3).
+# `--custom-firefox`. Try push:
+# https://treeherder.mozilla.org/jobs?repo=try&revision=dfa4118d57f0ef8772dd566ca9de04ae359562bf
+#
+# Patch stack on top of mozilla-central, newest first:
+#   e84f456b9a  Proxy remote subresources of loopback-hosted pages
+#   571a01bbbb  Use MASQUE (connect-udp) for the outer VPN connection
+#   1b21315eed  Bug 2005211, skip Alt-Svc route validation, which is what
+#               carries HTTP/3 to the origin (connect-udp inner)
+#   434f5a0cc9  Bug 1978893, back-pressure the inner connect-udp connection
+#   c7e1938d97  Bug 1978893, vendor neqo (mxinden-bot/neqo c4e3b18158) with
+#               outbound datagram backpressure, adapt the neqo_glue FFI
+#
+# Changed since the previous pin (W0DwkqlJTqGYtbKYGqr9iA): the bottom two
+# commits are new. Datagrams that no longer fit are refused at the API instead
+# of queued without bound, so an overloaded inner connection now applies
+# backpressure rather than growing the queue.
+#
+# Also in the build: D304159 (Bug 2043768, "Honor http2/http3 prefs in Happy
+# Eyeballs v3"), and IPProtectionServerlist gates the synthesized
+# MASQUE-primary entry on network.http.http3.enable, so clearing that pref
+# leaves the plain CONNECT entry and forces an HTTP/2 CONNECT hop (matrix
+# config 3).
+#
+# Known orange on try, and expected: test_bug1948203.js and
+# test_happy_eyeballs_altsvc_h3_only_claim.js fail because 1b21315eed drops
+# Alt-Svc validation for every mapping, not only the proxy route. The builds
+# and all lint jobs are green; the artifact is fine.
 FIREFOX_CUSTOM_URL = (
     "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/"
-    "W0DwkqlJTqGYtbKYGqr9iA/runs/0/artifacts/public/build/target.tar.xz"
+    "Oi_t-CFET_aPMpb1COlQmA/runs/0/artifacts/public/build/target.tar.xz"
 )
 # Origin whose h3 Alt-Svc we prime before a --vpn --h3 run (see prime_h3_altsvc).
 H3_PRIME_URL = "https://bastion.h3.speed.cloudflare.com/cdn-cgi/trace"
